@@ -2,7 +2,11 @@ GOG Galaxy 2.0 Final Fantasy XIV integration
 
 # Installation
 
-Clone repository to `%localappdata%\GOG.com\Galaxy\plugins\installed\ffxiv`
+1. Download latest release from https://github.com/RZetko/galaxy-integration-ffxiv/releases/latest
+2. Extract it to `%localappdata%\GOG.com\Galaxy\plugins\installed\`
+3. Restart your GOG Galaxy 2.0 client 
+4. Setup Final Fantasy XIV integration by clicking on gear in top left corner of GOG Galaxy client, select settings->integrations, scroll 
+down to community integrations and click connect on Final Fantasy XIV integration
 
 # Working with code
 
@@ -10,24 +14,15 @@ Clone repository to `%localappdata%\GOG.com\Galaxy\plugins\installed\ffxiv`
 Install Python extensions (shuold not be needed) `pip install -r requirements.txt -t ./modules --implementation cp --python-version 37 --only-binary=:all:`
 
 ## Files and folders
-* ./html/
-    * folder with html files that will popup when first connecting integration
-* ./modules/
-    * folder with installed python modules required for proper functionality of integration
-* ./ffxiv_api.py
-    * handles logging in and retrieving character details
-* ./ffxiv_localgame.py
-    * handles tasks with local game - starting, deleting
-* ./ffxiv_tools.py
-    * helper functions
-* ./plugin.py
-    * main script responsible for launching integration
-* ./version.py
-    * contains current version of integration
-* ./manifest.json
-    * contains identification info about integration
-* ./requirements.txt
-    * contains python modules required for proper functionality of integration
+* ./html/ - folder with html files that will popup when first connecting integration
+* ./modules/ - folder with installed python modules required for proper functionality of integration
+* ./ffxiv_api.py - handles logging in and retrieving character details
+* ./ffxiv_localgame.py - handles tasks with local game - starting, deleting
+* ./ffxiv_tools.py - helper functions
+* ./plugin.py - main script responsible for launching integration
+* ./version.py - contains current version of integration
+* ./manifest.json - contains identification info about integration
+* ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
 * v. 1.0.0
