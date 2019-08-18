@@ -2,7 +2,7 @@
     "name": "Galaxy FFXIV Plugin",
     "platform": "ffxiv",
     "guid": "0a9eb0eb-812a-45a1-bc40-c1cd82195313",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Galaxy FFXIV Plugin",
     "author": "RZetko",
     "email": "",

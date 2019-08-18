@@ -6,12 +6,20 @@ import string
 import sys
 import pprint
 import threading
-import modules.requests as requests
+import tempfile
+import modules.urllib3 as urllib3
 
 from urllib.parse import parse_qs
 from typing import Dict, List
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from enum import Enum
+
+modules =  os.path.join(os.path.dirname(os.path.realpath(__file__)),'modules\\')
+
+if modules not in sys.path:
+    sys.path.insert(0, modules)
+
+import modules.requests as requests
 
 class FFXIVAuthorizationResult(Enum):
     FAILED = 0
@@ -51,7 +59,7 @@ class FFXIVAuthorizationServer(BaseHTTPRequestHandler):
 
         if data_valid:
             try:
-                auth_result = self.backend.do_auth_character(data[b'character_id'][0]).decode("utf-8")
+                auth_result = self.backend.do_auth_character(data[b'character_id'][0].decode("utf-8"))
             except Exception:
                 logging.exception("error on doing auth:")
  
@@ -60,10 +68,8 @@ class FFXIVAuthorizationServer(BaseHTTPRequestHandler):
 
         if auth_result == FFXIVAuthorizationResult.FINISHED:
             self.send_header('Location','/finished')
-        # elif auth_result == GW2AuthorizationResult.FAILED:
-        #     self.send_header('Location', '/login_noaccount')
-        # else:
-        #     self.send_header('Location','/login_failed')
+        else:
+            self.send_header('Location','/login_failed')
 
         self.end_headers()
 
@@ -96,9 +102,10 @@ class FFXIVAuthorizationServer(BaseHTTPRequestHandler):
 
 class FFXIVAPI(object):
     API_DOMAIN = 'https://xivapi.com/'
-    API_URL_CHARACTER = '/character'
+    API_URL_CHARACTER = 'character/'
     LOCALSERVER_HOST = '127.0.0.1'
     LOCALSERVER_PORT = 13338
+    INSTALL_URL = "http://gdl.square-enix.com/ffxiv/inst/ffxivsetup.exe"
 
     def __init__(self):
         self._server_thread = None
@@ -111,14 +118,19 @@ class FFXIVAPI(object):
     #
 
     def get_character_id(self) -> str:
-        return self.character_id
+        return self._character_id
+        
+    def get_character(self) -> List[str]:
+        return self._account_info['Character']
+
+    def get_character_name(self) -> str:
+        return self._account_info['Character']['Name']
 
     def get_account_achievements(self) -> List[str]:
-        return self._account_info['achievements']
+        return self._account_info['Achievements']['List']
 
     def get_account_friends(self) -> List[str]:
-        return self._account_info['friends']
-
+        return self._account_info['Friends']
 
     #
     # Authorization server
@@ -131,12 +143,10 @@ class FFXIVAPI(object):
 
         if self._server_thread is not None:
             logging.warning('FFXIVAuthorization/auth_server_start: Auth server thread is already running')
-
             return False
 
         if self._server_object is not None:
             logging.warning('FFXIVAuthorization/auth_server_start: Auth server object is exists')
-
             return False
 
         FFXIVAuthorizationServer.backend = self
@@ -153,7 +163,6 @@ class FFXIVAPI(object):
             self._server_object = None
         else:
             logging.warning('FFXIVAuthorization/auth_server_stop: Auth server object is not exits')
-
             return False
 
         if self._server_thread is not None:
@@ -161,7 +170,6 @@ class FFXIVAPI(object):
             self._server_thread = None
         else:
             logging.warning('FFXIVAuthorization/auth_server_stop: Auth server thread is not running')
-
             return False
 
     def do_auth_character(self, character_id : str) -> FFXIVAuthorizationResult:
@@ -184,8 +192,8 @@ class FFXIVAPI(object):
 
         return FFXIVAuthorizationResult.FINISHED
 
-    def __api_get_account_info(self, api_key):
-        resp = requests.get(self.API_DOMAIN + self.API_URL_CHARACTER, params={'data': 'AC,FR'})
+    def __api_get_account_info(self, character_id : str):
+        resp = requests.get(self.API_DOMAIN + self.API_URL_CHARACTER + character_id, params={'data': 'AC,FR'})
         result = None
 
         try: 
@@ -194,3 +202,27 @@ class FFXIVAPI(object):
             logging.error('ffxivapi/__api_get_account_info: %s' % resp.text)
 
         return (resp.status_code, result)
+
+    # async def download_installer(self):
+    #     installer_path = os.path.join(tempfile.mkdtemp(), "ffxivsetup.exe")
+
+    #     async with aiofiles.open(installer_path, mode="wb") as installer_bin:
+    #         await installer_bin.write(await self.get_installer())
+
+    #     return installer_path
+
+    # async def get_installer(self) -> bytes:
+    #     return await self.get_file(url=self.INSTALL_URL)
+
+    # async def get_file(self, *args) -> bytes:
+    #     return await (
+    #         await self._authenticated_request("GET", *args, allow_redirects=False)
+    #     ).read()
+
+    # async def _authenticated_request(self, method, *args) -> ClientResponse:
+    #     response = await super().request(method, *args)
+    #     if response.status == HTTPStatus.FOUND:
+    #         self._auth_lost_callback()
+    #         raise AuthenticationRequired()
+
+    #     return response
