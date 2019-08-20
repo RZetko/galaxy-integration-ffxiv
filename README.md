@@ -5,7 +5,8 @@ GOG Galaxy 2.0 Final Fantasy XIV integration
 1. Download latest release from https://github.com/RZetko/galaxy-integration-ffxiv/releases/latest
 2. Extract it to `%localappdata%\GOG.com\Galaxy\plugins\installed\`
 3. Restart your GOG Galaxy 2.0 client 
-4. Setup Final Fantasy XIV integration by clicking on gear in top left corner of GOG Galaxy client, select settings->integrations, scroll 
+4. Set your character achievements and friends to public on Lodestone: https://eu.finalfantasyxiv.com/lodestone/my/setting/account/
+5. Setup Final Fantasy XIV integration by clicking on gear in top left corner of GOG Galaxy client, select settings->integrations, scroll 
 down to community integrations and click connect on Final Fantasy XIV integration
 
 # Working with code
