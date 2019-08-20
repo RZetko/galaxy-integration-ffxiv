@@ -151,7 +151,6 @@ class FinalFantasyXIVPlugin(Plugin):
         if not self._task_check_for_running or self._task_check_for_running.done():
             self._task_check_for_running = asyncio.create_task(self.task_check_for_running_func())
 
-
     async def task_check_for_running_func(self):
 
         if self._last_state == LocalGameState.None_:
