@@ -24,7 +24,11 @@ def get_installation_folder():
             skey = winreg.OpenKey(key, skey_name)
 
             try:
-                if (winreg.QueryValueEx(skey, 'DisplayName')[0] == "FINAL FANTASY XIV - A Realm Reborn") or (winreg.QueryValueEx(skey, 'DisplayName')[0] == "FINAL FANTASY XIV Online"):
+                if (
+                        (winreg.QueryValueEx(skey, 'DisplayName')[0].lower() == "FINAL FANTASY XIV - A Realm Reborn".lower()) or
+                        (winreg.QueryValueEx(skey, 'DisplayName')[0].lower() == "FINAL FANTASY XIV ONLINE".lower()) or
+                        (winreg.QueryValueEx(skey, 'DisplayName')[0].lower() == "FINAL FANTASY XIV".lower())
+                    ):
                     install_location = winreg.QueryValueEx(skey, 'InstallLocation')[0] + "\\FINAL FANTASY XIV - A Realm Reborn"
                     skey.Close()
                     
