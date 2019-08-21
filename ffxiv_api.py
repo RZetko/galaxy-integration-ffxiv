@@ -203,26 +203,12 @@ class FFXIVAPI(object):
 
         return (resp.status_code, result)
 
-    # async def download_installer(self):
-    #     installer_path = os.path.join(tempfile.mkdtemp(), "ffxivsetup.exe")
+    def get_installer(self):
+        installer_path = os.path.join(tempfile.mkdtemp(), "ffxivsetup.exe")
+        resp = requests.get(self.INSTALL_URL)
 
-    #     async with aiofiles.open(installer_path, mode="wb") as installer_bin:
-    #         await installer_bin.write(await self.get_installer())
+        if resp.status_code == 200:
+            with open(installer_path, 'wb') as f:
+                f.write(resp.content)
 
-    #     return installer_path
-
-    # async def get_installer(self) -> bytes:
-    #     return await self.get_file(url=self.INSTALL_URL)
-
-    # async def get_file(self, *args) -> bytes:
-    #     return await (
-    #         await self._authenticated_request("GET", *args, allow_redirects=False)
-    #     ).read()
-
-    # async def _authenticated_request(self, method, *args) -> ClientResponse:
-    #     response = await super().request(method, *args)
-    #     if response.status == HTTPStatus.FOUND:
-    #         self._auth_lost_callback()
-    #         raise AuthenticationRequired()
-
-    #     return response
+        return installer_path

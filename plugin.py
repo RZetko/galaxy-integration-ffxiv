@@ -81,8 +81,17 @@ class FinalFantasyXIVPlugin(Plugin):
 
     async def get_owned_games(self):
         dlcs = list()
-        install_folder = ffxiv_tools.get_installation_folder() + "\\game\\sqpack\\"
-        dlclist = [ item for item in os.listdir(install_folder) if os.path.isdir(os.path.join(install_folder, item)) ]
+        install_folder = ffxiv_tools.get_installation_folder()
+        license_type = LicenseType.SinglePurchase
+
+        if (
+            (install_folder is None) or
+            (not os.path.exists(install_folder))
+        ):
+            return [ Game(game_id = 'final_fantasy_xiv', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
+
+        dlc_folder = install_folder + "\\game\\sqpack\\"
+        dlclist = [ item for item in os.listdir(dlc_folder) if os.path.isdir(os.path.join(dlc_folder, item)) ]
 
         for dlc in dlclist:
             if dlc == "ffxiv":
@@ -101,8 +110,6 @@ class FinalFantasyXIVPlugin(Plugin):
                 dlc_name = "Final Fantasy XIV: Shadowbringers"
 
             dlcs.append(Dlc(dlc_id = dlc_id, dlc_title = dlc_name, license_info = LicenseInfo(license_type = LicenseType.SinglePurchase)))
-
-        license_type = LicenseType.SinglePurchase
 
         return [ Game(game_id = 'final_fantasy_xiv', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
 
@@ -127,13 +134,19 @@ class FinalFantasyXIVPlugin(Plugin):
 
         self._game_instances[0].run_game()
 
-    async def install_game(self, game_id):
-        # subprocess.Popen(await self._ffxiv_api.download_installer(), creationflags=0x00000008)
-        pass
+    async def install_game(self, game_id: str):
+        installer_path = self._ffxiv_api.get_installer()
+
+        if (
+            (installer_path is None) or
+            (not os.path.exists(installer_path))
+        ):
+            return
+
+        subprocess.Popen(installer_path, creationflags=0x00000008)
 
     async def uninstall_game(self, game_id: str):
         self._game_instances[0].delete_game()
-        pass
 
     async def get_unlocked_achievements(self, game_id: str, context) -> List[Achievement]:
         achievements = list()

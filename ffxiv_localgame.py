@@ -25,7 +25,10 @@ def get_game_instances() -> List[FFXIVLocalGame]:
     result = list()
     install_folder = ffxiv_tools.get_installation_folder()
 
-    if not os.path.exists(install_folder):
+    if (
+        (install_folder is None) or
+        (not os.path.exists(install_folder))
+    ):
         return result
 
     result.append(FFXIVLocalGame(install_folder + "\\boot\\", "ffxivboot.exe"))

@@ -6,8 +6,27 @@ GOG Galaxy 2.0 Final Fantasy XIV integration
 2. Extract it to `%localappdata%\GOG.com\Galaxy\plugins\installed\`
 3. Restart your GOG Galaxy 2.0 client 
 4. Set your character achievements and friends to public on Lodestone: https://eu.finalfantasyxiv.com/lodestone/my/setting/account/
-5. Setup Final Fantasy XIV integration by clicking on gear in top left corner of GOG Galaxy client, select settings->integrations, scroll 
+5. Retrieve your FF XIV character ID from https://eu.finalfantasyxiv.com/lodestone/ (or https://na.finalfantasyxiv.com/lodestone/) and go to character profile. You'll find character ID in address bar.
+6. Setup Final Fantasy XIV integration by clicking on gear in top left corner of GOG Galaxy client, select settings->integrations, scroll 
 down to community integrations and click connect on Final Fantasy XIV integration
+
+# Features
+
+## Supported
+
+* Launching and uninstalling game
+
+* Detecting if game is running
+
+* Syncing friends
+
+## Unsupported
+
+* Achievements syncing - unsupported by platform (already implemented in code, if platform receives support for it, it should automatically work)
+
+* Installing game - unsupported by platform (already implemented in code, if platform receives support for it, it should automatically work)
+
+* Playtime tracking - unsupported by XIVAPI
 
 # Working with code
 
@@ -26,6 +45,15 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.1.0
+   * Added implmentation for downloading and installing game (currently unsupported by platform)
+   * Fixed crashes when detecting installation folder
+   * Fixed missing game in games library when it's not installed
+   * Updated readme
+* v. 1.0.2
+   * Added more paths for FF XIV installation folder + better detection of it 
+* v. 1.0.1
+   * Fixed issues with detecting FF XIV installation folder for some users
 * v. 1.0.0
    * First working release 
    * Supports launching game, uninstalling game, detecting game launch and if it's running, synchronizing friends
