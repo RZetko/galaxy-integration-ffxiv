@@ -46,7 +46,7 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
     
 # Changelog
 * v. 1.1.0
-   * Added implmentation for downloading and installing game (currently unsupported by platform)
+   * Added implementation for downloading and installing game (currently unsupported by platform)
    * Fixed crashes when detecting installation folder
    * Fixed missing game in games library when it's not installed
    * Updated readme
