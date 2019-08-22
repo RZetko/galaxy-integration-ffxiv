@@ -45,6 +45,10 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.1.1
+   * Updated Game ID
+   * Better game cover art and game information
+   * User activity from other platforms (steam) now visible on game page 
 * v. 1.1.0
    * Added implementation for downloading and installing game (currently unsupported by platform)
    * Fixed crashes when detecting installation folder

@@ -77,7 +77,7 @@ class FinalFantasyXIVPlugin(Plugin):
 
         self._last_state = LocalGameState.Installed
 
-        return [ LocalGame(game_id='final_fantasy_xiv', local_game_state = self._last_state)]
+        return [ LocalGame(game_id='final_fantasy_xiv_shadowbringers', local_game_state = self._last_state)]
 
     async def get_owned_games(self):
         dlcs = list()
@@ -88,7 +88,7 @@ class FinalFantasyXIVPlugin(Plugin):
             (install_folder is None) or
             (not os.path.exists(install_folder))
         ):
-            return [ Game(game_id = 'final_fantasy_xiv', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
+            return [ Game(game_id = 'final_fantasy_xiv_shadowbringers', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
 
         dlc_folder = install_folder + "\\game\\sqpack\\"
         dlclist = [ item for item in os.listdir(dlc_folder) if os.path.isdir(os.path.join(dlc_folder, item)) ]
@@ -111,7 +111,7 @@ class FinalFantasyXIVPlugin(Plugin):
 
             dlcs.append(Dlc(dlc_id = dlc_id, dlc_title = dlc_name, license_info = LicenseInfo(license_type = LicenseType.SinglePurchase)))
 
-        return [ Game(game_id = 'final_fantasy_xiv', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
+        return [ Game(game_id = 'final_fantasy_xiv_shadowbringers', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
 
     async def get_game_times(self):
         pass
@@ -129,7 +129,7 @@ class FinalFantasyXIVPlugin(Plugin):
         return friends
 
     async def launch_game(self, game_id):
-        if game_id != 'final_fantasy_xiv':
+        if game_id != 'final_fantasy_xiv_shadowbringers':
             return
 
         self._game_instances[0].run_game()
@@ -203,7 +203,7 @@ class FinalFantasyXIVPlugin(Plugin):
             new_state = LocalGameState.Installed
 
         if self._last_state != new_state:
-            self.update_local_game_status(LocalGame("final_fantasy_xiv", new_state))
+            self.update_local_game_status(LocalGame("final_fantasy_xiv_shadowbringers", new_state))
             self._last_state = new_state
 
         await asyncio.sleep(self.SLEEP_CHECK_RUNNING)
