@@ -45,6 +45,9 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.1.2 (Thanks to [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy) for detailed bug reports)
+   * Fixed FF XIV not being able to uninstall on some systems (updated registry paths)
+   * Added periodic check for game status (installed/uninstalled) to show realtime status without need to restart client
 * v. 1.1.1
    * Updated Game ID
    * Better game cover art and game information
