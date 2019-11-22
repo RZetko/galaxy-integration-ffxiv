@@ -25,6 +25,27 @@ class FinalFantasyXIVPlugin(Plugin):
         self._game_instances = None
         self._task_check_for_running  = None
         self._last_state = LocalGameState.None_
+        self._check_statuses_task = None
+        self._cached_game_statuses = {}
+
+    def tick(self):
+        if self._check_statuses_task is None or self._check_statuses_task.done():
+            self._check_statuses_task = asyncio.create_task(self._check_statuses())
+
+    async def _check_statuses(self):
+        local_games = await self.get_local_games()
+
+        if local_games:
+            for game in await self.get_local_games():
+                if game.local_game_state == self._cached_game_statuses.get(game.game_id):
+                    continue
+                self.update_local_game_status(LocalGame(game.game_id, game.local_game_state))
+                self._cached_game_statuses[game.game_id] = game.local_game_state
+        else:
+            self.update_local_game_status(LocalGame("final_fantasy_xiv_shadowbringers", LocalGameState.None_))
+            self._cached_game_statuses["final_fantasy_xiv_shadowbringers"] = LocalGameState.None_
+
+        await asyncio.sleep(5)
 
     async def authenticate(self, stored_credentials=None):
         if not stored_credentials:
@@ -159,10 +180,6 @@ class FinalFantasyXIVPlugin(Plugin):
     async def start_achievements_import(self, game_ids: List[str]) -> None:
         # self.requires_authentication()
         await super()._start_achievements_import(game_ids)
-
-    def tick(self):
-        if not self._task_check_for_running or self._task_check_for_running.done():
-            self._task_check_for_running = asyncio.create_task(self.task_check_for_running_func())
 
     async def task_check_for_running_func(self):
 

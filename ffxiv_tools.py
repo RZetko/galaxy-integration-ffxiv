@@ -51,7 +51,13 @@ def get_uninstall_exe():
             skey = winreg.OpenKey(key, skey_name)
 
             try:
-                if (winreg.QueryValueEx(skey, 'DisplayName')[0] == "FINAL FANTASY XIV - A Realm Reborn"):
+                display_name = winreg.QueryValueEx(skey, 'DisplayName')[0].lower()
+
+                if (
+                        (display_name == "FINAL FANTASY XIV - A Realm Reborn".lower()) or
+                        (display_name == "FINAL FANTASY XIV ONLINE".lower()) or
+                        (display_name == "FINAL FANTASY XIV".lower())
+                    ):
                     uninstall_exe = winreg.QueryValueEx(skey, 'UninstallString')[0]
                     skey.Close()
                     
