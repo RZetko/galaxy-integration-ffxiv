@@ -45,6 +45,9 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.2.0 Thanks to [@UmbyUmbreon](https://github.com/UmbyUmbreon) and [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy)
+   * FF XIV integration can be now found in GOG Galaxy integrations search and will be automatically updated
+   * Optimizations for checking game status (pull request https://github.com/RZetko/galaxy-integration-ffxiv/pull/7) 
 * v. 1.1.2 (Thanks to [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy) for detailed bug reports)
    * Fixed FF XIV not being able to uninstall on some systems (updated registry paths)
    * Added periodic check for game status (installed/uninstalled) to show realtime status without need to restart client
@@ -75,3 +78,7 @@ https://github.com/gogcom/galaxy-integrations-python-api
 [@Mixaill](https://github.com/Mixaill) for his GOG Galaxy Guild Wars 2 integration which I used as base for this integration. https://github.com/Mixaill/galaxy-integration-gw2
 
 [@viion](https://twitter.com/viion) for A FINAL FANTASY XIV: Online REST API https://xivapi.com/
+
+[@UmbyUmbreon](https://github.com/UmbyUmbreon)
+
+[@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy)
