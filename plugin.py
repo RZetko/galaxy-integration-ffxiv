@@ -16,7 +16,7 @@ from modules.galaxy.api.plugin import Plugin, create_and_run_plugin
 from modules.galaxy.api.types import Achievement, Authentication, NextStep, Dlc, LicenseInfo, Game, GameTime, LocalGame, FriendInfo
 
 class FinalFantasyXIVPlugin(Plugin):
-    SLEEP_CHECK_RUNNING = 5
+    SLEEP_CHECK_STATUS = 5
     SLEEP_CHECK_RUNNING_ITER = 0.01
 
     def __init__(self, reader, writer, token):
@@ -24,7 +24,6 @@ class FinalFantasyXIVPlugin(Plugin):
         self._ffxiv_api = FFXIVAPI()
         self._game_instances = None
         self._task_check_for_running  = None
-        self._last_state = LocalGameState.None_
         self._check_statuses_task = None
         self._cached_game_statuses = {}
 
@@ -36,7 +35,8 @@ class FinalFantasyXIVPlugin(Plugin):
         local_games = await self.get_local_games()
 
         if local_games:
-            for game in await self.get_local_games():
+            for game in local_games:
+                game.local_game_state = await self._is_running()
                 if game.local_game_state == self._cached_game_statuses.get(game.game_id):
                     continue
                 self.update_local_game_status(LocalGame(game.game_id, game.local_game_state))
@@ -45,7 +45,7 @@ class FinalFantasyXIVPlugin(Plugin):
             self.update_local_game_status(LocalGame("final_fantasy_xiv_shadowbringers", LocalGameState.None_))
             self._cached_game_statuses["final_fantasy_xiv_shadowbringers"] = LocalGameState.None_
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(self.SLEEP_CHECK_STATUS)
 
     async def authenticate(self, stored_credentials=None):
         if not stored_credentials:
@@ -92,13 +92,9 @@ class FinalFantasyXIVPlugin(Plugin):
         self._game_instances = ffxiv_localgame.get_game_instances()
         
         if len(self._game_instances) == 0:
-            self._last_state = LocalGameState.None_
-
             return []
 
-        self._last_state = LocalGameState.Installed
-
-        return [ LocalGame(game_id='final_fantasy_xiv_shadowbringers', local_game_state = self._last_state)]
+        return [ LocalGame(game_id='final_fantasy_xiv_shadowbringers', local_game_state = LocalGameState.Installed)]
 
     async def get_owned_games(self):
         dlcs = list()
@@ -154,6 +150,7 @@ class FinalFantasyXIVPlugin(Plugin):
             return
 
         self._game_instances[0].run_game()
+        self.update_local_game_status(LocalGame(game_id, LocalGameState.Installed | LocalGameState.Running))
 
     async def install_game(self, game_id: str):
         installer_path = self._ffxiv_api.get_installer()
@@ -181,24 +178,14 @@ class FinalFantasyXIVPlugin(Plugin):
         # self.requires_authentication()
         await super()._start_achievements_import(game_ids)
 
-    async def task_check_for_running_func(self):
+    async def _is_running(self):
+        target_exes = [
+            "ffxivlauncher64.exe",
+            "ffxiv.exe",
+            "ffxiv_dx11.exe",
+            "ffxivlauncher.exe"
+        ]
 
-        if self._last_state == LocalGameState.None_:
-            await asyncio.sleep(self.SLEEP_CHECK_RUNNING)
-            return
-
-        if not self._game_instances:
-            await asyncio.sleep(self.SLEEP_CHECK_RUNNING)
-            return
-
-        #get exe names
-        target_exes = list()
-        target_exes.append("ffxivlauncher64.exe")
-        target_exes.append("ffxiv.exe")
-        target_exes.append("ffxiv_dx11.exe")
-        target_exes.append("ffxivlauncher.exe")
-
-        #check processes
         running = False
 
         for process in psutil.process_iter():
@@ -211,19 +198,7 @@ class FinalFantasyXIVPlugin(Plugin):
 
             await asyncio.sleep(self.SLEEP_CHECK_RUNNING_ITER)
 
-        #update state
-        new_state = None
-
-        if running:
-            new_state = LocalGameState.Installed | LocalGameState.Running
-        else:
-            new_state = LocalGameState.Installed
-
-        if self._last_state != new_state:
-            self.update_local_game_status(LocalGame("final_fantasy_xiv_shadowbringers", new_state))
-            self._last_state = new_state
-
-        await asyncio.sleep(self.SLEEP_CHECK_RUNNING)
+        return LocalGameState.Installed | LocalGameState.Running if running else LocalGameState.Installed
 
 def main():
     create_and_run_plugin(FinalFantasyXIVPlugin, sys.argv)
