@@ -45,6 +45,8 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.2.1
+   * Fixed issue with GOG Galaxy integrations
 * v. 1.2.0 Thanks to [@UmbyUmbreon](https://github.com/UmbyUmbreon) and [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy)
    * FF XIV integration can be now found in GOG Galaxy integrations search and will be automatically updated
    * Optimizations for checking game status (pull request https://github.com/RZetko/galaxy-integration-ffxiv/pull/7) 
