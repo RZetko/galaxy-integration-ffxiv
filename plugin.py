@@ -108,7 +108,7 @@ class FinalFantasyXIVPlugin(Plugin):
             return [ Game(game_id = 'final_fantasy_xiv_shadowbringers', game_title = 'Final Fantasy XIV: A Realm Reborn', dlcs = dlcs, license_info = LicenseInfo(license_type = license_type)) ]
 
         dlc_folder = install_folder + "\\game\\sqpack\\"
-        dlclist = [ item for item in os.listdir(dlc_folder) if os.path.isdir(os.path.join(dlc_folder, item)) ]
+        dlclist = [ item for item in os.listdir(dlc_folder) if os.path.isdir(os.path.join(dlc_folder, item)) ] if os.path.exists(dlc_folder) else []
 
         for dlc in dlclist:
             if dlc == "ffxiv":
