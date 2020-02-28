@@ -141,7 +141,7 @@ class FinalFantasyXIVPlugin(Plugin):
         account_friends = self._ffxiv_api.get_account_friends()
 
         for friend in account_friends:
-            friends.append(FriendInfo(friend['ID'], friend['Name']))
+            friends.append(FriendInfo(str(friend['ID']), friend['Name']))
 
         return friends
 
@@ -170,7 +170,7 @@ class FinalFantasyXIVPlugin(Plugin):
         achievements = list()
 
         for achievement in self._ffxiv_api.get_account_achievements():
-            achievements.append(Achievement(int(achievement['Date']), achievement['ID']))
+            achievements.append(Achievement(int(achievement['Date']), str(achievement['ID'])))
 
         return achievements
 
