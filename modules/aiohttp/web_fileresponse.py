@@ -24,7 +24,6 @@ from .log import server_logger
 from .typedefs import LooseHeaders
 from .web_exceptions import (
     HTTPNotModified,
-    HTTPOk,
     HTTPPartialContent,
     HTTPPreconditionFailed,
     HTTPRequestRangeNotSatisfiable,
@@ -245,7 +244,7 @@ class FileResponse(StreamResponse):
             encoding = 'gzip' if gzip else None
             should_set_ct = False
 
-        status = HTTPOk.status_code
+        status = self._status
         file_size = st.st_size
         count = file_size
 
@@ -318,8 +317,8 @@ class FileResponse(StreamResponse):
                 status = HTTPPartialContent.status_code
                 # Even though you are sending the whole file, you should still
                 # return a HTTP 206 for a Range request.
+                self.set_status(status)
 
-        self.set_status(status)
         if should_set_ct:
             self.content_type = ct  # type: ignore
         if encoding:
@@ -337,8 +336,11 @@ class FileResponse(StreamResponse):
             self.headers[hdrs.CONTENT_RANGE] = 'bytes {0}-{1}/{2}'.format(
                 real_start, real_start + count - 1, file_size)
 
-        with (await loop.run_in_executor(None, filepath.open, 'rb')) as fobj:
-            if start:  # be aware that start could be None or int=0 here.
-                await loop.run_in_executor(None, fobj.seek, start)
+        fobj = await loop.run_in_executor(None, filepath.open, 'rb')
+        if start:  # be aware that start could be None or int=0 here.
+            await loop.run_in_executor(None, fobj.seek, start)
 
+        try:
             return await self._sendfile(request, fobj, count)
+        finally:
+            await loop.run_in_executor(None, fobj.close)

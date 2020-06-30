@@ -15,8 +15,8 @@ except ImportError:
     SSLContext = object  # type: ignore
 
 
-__all__ = ('BaseSite', 'TCPSite', 'UnixSite', 'SockSite', 'BaseRunner',
-           'AppRunner', 'ServerRunner', 'GracefulExit')
+__all__ = ('BaseSite', 'TCPSite', 'UnixSite', 'NamedPipeSite', 'SockSite',
+           'BaseRunner', 'AppRunner', 'ServerRunner', 'GracefulExit')
 
 
 class GracefulExit(SystemExit):
@@ -58,7 +58,9 @@ class BaseSite(ABC):
             self._runner._unreg_site(self)
             return  # not started yet
         self._server.close()
-        await self._server.wait_closed()
+        # named pipes do not have wait_closed property
+        if hasattr(self._server, 'wait_closed'):
+            await self._server.wait_closed()
         await self._runner.shutdown()
         assert self._runner.server
         await self._runner.server.shutdown(self._shutdown_timeout)
@@ -95,7 +97,7 @@ class TCPSite(BaseSite):
         loop = asyncio.get_event_loop()
         server = self._runner.server
         assert server is not None
-        self._server = await loop.create_server(
+        self._server = await loop.create_server(  # type: ignore
             server, self._host, self._port,
             ssl=self._ssl_context, backlog=self._backlog,
             reuse_address=self._reuse_address,
@@ -128,6 +130,33 @@ class UnixSite(BaseSite):
             ssl=self._ssl_context, backlog=self._backlog)
 
 
+class NamedPipeSite(BaseSite):
+    __slots__ = ('_path', )
+
+    def __init__(self, runner: 'BaseRunner', path: str, *,
+                 shutdown_timeout: float=60.0) -> None:
+        loop = asyncio.get_event_loop()
+        if not isinstance(loop, asyncio.ProactorEventLoop):  # type: ignore
+            raise RuntimeError("Named Pipes only available in proactor"
+                               "loop under windows")
+        super().__init__(runner, shutdown_timeout=shutdown_timeout)
+        self._path = path
+
+    @property
+    def name(self) -> str:
+        return self._path
+
+    async def start(self) -> None:
+        await super().start()
+        loop = asyncio.get_event_loop()
+        server = self._runner.server
+        assert server is not None
+        _server = await loop.start_serving_pipe(  # type: ignore
+            server, self._path
+        )
+        self._server = _server[0]
+
+
 class SockSite(BaseSite):
     __slots__ = ('_sock', '_name')
 
@@ -155,7 +184,7 @@ class SockSite(BaseSite):
         loop = asyncio.get_event_loop()
         server = self._runner.server
         assert server is not None
-        self._server = await loop.create_server(
+        self._server = await loop.create_server(  # type: ignore
             server, sock=self._sock,
             ssl=self._ssl_context, backlog=self._backlog)
 

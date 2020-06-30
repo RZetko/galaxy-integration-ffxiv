@@ -82,8 +82,8 @@ _WSMessageBase = collections.namedtuple('_WSMessageBase',
 
 class WSMessage(_WSMessageBase):
 
-    def json(self, *,  # type: ignore
-             loads: Callable[[Any], Any]=json.loads) -> None:
+    def json(self, *,
+             loads: Callable[[Any], Any]=json.loads) -> Any:
         """Return parsed JSON data.
 
         .. versionadded:: 0.22
@@ -100,7 +100,10 @@ class WebSocketError(Exception):
 
     def __init__(self, code: int, message: str) -> None:
         self.code = code
-        super().__init__(message)
+        super().__init__(code, message)
+
+    def __str__(self) -> str:
+        return self.args[1]
 
 
 class WSHandshakeError(Exception):
@@ -365,9 +368,12 @@ class WebSocketReader:
                             left = len(self._decompressobj.unconsumed_tail)
                             raise WebSocketError(
                                 WSCloseCode.MESSAGE_TOO_BIG,
-                                "Decompressed message size exceeds limit {}".
-                                format(self._max_msg_size + left,
-                                       self._max_msg_size))
+                                "Decompressed message size {} exceeds limit {}"
+                                .format(
+                                    self._max_msg_size + left,
+                                    self._max_msg_size
+                                )
+                            )
                     else:
                         payload_merged = bytes(self._partial)
 

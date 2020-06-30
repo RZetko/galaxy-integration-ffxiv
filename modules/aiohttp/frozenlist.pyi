@@ -1,5 +1,14 @@
-from typing import (Generic, Iterable, Iterator, List, MutableSequence,
-                    Optional, TypeVar, Union, overload)
+from typing import (
+    Generic,
+    Iterable,
+    Iterator,
+    List,
+    MutableSequence,
+    Optional,
+    TypeVar,
+    Union,
+    overload,
+)
 
 _T = TypeVar('_T')
 _Arg = Union[List[_T], Iterable[_T]]
@@ -7,7 +16,7 @@ _Arg = Union[List[_T], Iterable[_T]]
 
 class FrozenList(MutableSequence[_T], Generic[_T]):
 
-    def __init__(self, items: Optional[_Arg[_T]]=None) -> None: ...
+    def __init__(self, items: Optional[_Arg[_T]]=...) -> None: ...
 
     @property
     def frozen(self) -> bool: ...

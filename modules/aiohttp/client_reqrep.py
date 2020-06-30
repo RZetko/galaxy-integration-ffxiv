@@ -220,7 +220,6 @@ class ClientRequest:
     body = b''
     auth = None
     response = None
-    response_class = None
 
     _writer = None  # async task for streaming data
     _continue = None  # waiter future for '100 Continue' response
@@ -367,7 +366,7 @@ class ClientRequest:
         netloc = cast(str, self.url.raw_host)
         if helpers.is_ipv6_address(netloc):
             netloc = '[{}]'.format(netloc)
-        if not self.url.is_default_port():
+        if self.url.port is not None and not self.url.is_default_port():
             netloc += ':' + str(self.url.port)
         self.headers[hdrs.HOST] = netloc
 
@@ -413,7 +412,7 @@ class ClientRequest:
             if isinstance(value, Morsel):
                 # Preserve coded_value
                 mrsl_val = value.get(value.key, Morsel())
-                mrsl_val.set(value.key, value.value, value.coded_value)  # type: ignore  # noqa
+                mrsl_val.set(value.key, value.value, value.coded_value)
                 c[name] = mrsl_val
             else:
                 c[name] = value  # type: ignore
@@ -580,7 +579,11 @@ class ClientRequest:
         # - not CONNECT proxy must send absolute form URI
         # - most common is origin form URI
         if self.method == hdrs.METH_CONNECT:
-            path = '{}:{}'.format(self.url.raw_host, self.url.port)
+            connect_host = self.url.raw_host
+            assert connect_host is not None
+            if helpers.is_ipv6_address(connect_host):
+                connect_host = '[{}]'.format(connect_host)
+            path = '{}:{}'.format(connect_host, self.url.port)
         elif self.proxy and not self.is_ssl():
             path = str(self.url)
         else:
@@ -932,7 +935,8 @@ class ClientResponse(HeadersMixin):
 
     def raise_for_status(self) -> None:
         if 400 <= self.status:
-            assert self.reason  # always not None for started response
+            # reason should always be not None for a started response
+            assert self.reason is not None
             self.release()
             raise ClientResponseError(
                 self.request_info,

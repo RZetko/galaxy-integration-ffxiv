@@ -4,6 +4,7 @@ import asyncio
 import base64
 import binascii
 import cgi
+import datetime
 import functools
 import inspect
 import netrc
@@ -52,6 +53,7 @@ __all__ = ('BasicAuth', 'ChainMapProxy')
 
 PY_36 = sys.version_info >= (3, 6)
 PY_37 = sys.version_info >= (3, 7)
+PY_38 = sys.version_info >= (3, 8)
 
 if not PY_37:
     import idna_ssl
@@ -66,7 +68,7 @@ except ImportError:
 def all_tasks(
         loop: Optional[asyncio.AbstractEventLoop] = None
 ) -> Set['asyncio.Task[Any]']:
-    tasks = list(asyncio.Task.all_tasks(loop))  # type: ignore
+    tasks = list(asyncio.Task.all_tasks(loop))
     return {t for t in tasks if not t.done()}
 
 
@@ -257,7 +259,7 @@ def current_task(loop: Optional[asyncio.AbstractEventLoop]=None) -> asyncio.Task
     if PY_37:
         return asyncio.current_task(loop=loop)  # type: ignore
     else:
-        return asyncio.Task.current_task(loop=loop)  # type: ignore
+        return asyncio.Task.current_task(loop=loop)
 
 
 def get_running_loop(
@@ -428,7 +430,7 @@ _ipv6_regexb = re.compile(_ipv6_pattern.encode('ascii'), flags=re.IGNORECASE)
 
 def _is_ip_address(
         regex: Pattern[str], regexb: Pattern[bytes],
-        host: Optional[Union[str, bytes]])-> bool:
+        host: Optional[Union[str, bytes]]) -> bool:
     if host is None:
         return False
     if isinstance(host, str):
@@ -449,8 +451,17 @@ def is_ip_address(
     return is_ipv4_address(host) or is_ipv6_address(host)
 
 
-_cached_current_datetime = None
-_cached_formatted_datetime = None
+def next_whole_second() -> datetime.datetime:
+    """Return current time rounded up to the next whole second."""
+    return (
+        datetime.datetime.now(
+            datetime.timezone.utc).replace(microsecond=0) +
+        datetime.timedelta(seconds=0)
+    )
+
+
+_cached_current_datetime = None  # type: Optional[int]
+_cached_formatted_datetime = ""
 
 
 def rfc822_formatted_time() -> str:
@@ -467,12 +478,12 @@ def rfc822_formatted_time() -> str:
                       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-        year, month, day, hh, mm, ss, wd, y, z = time.gmtime(now)  # type: ignore  # noqa
+        year, month, day, hh, mm, ss, wd, *tail = time.gmtime(now)
         _cached_formatted_datetime = "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
             _weekdayname[wd], day, _monthname[month], year, hh, mm, ss
         )
         _cached_current_datetime = now
-    return _cached_formatted_datetime  # type: ignore
+    return _cached_formatted_datetime
 
 
 def _weakref_handle(info):  # type: ignore

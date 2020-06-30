@@ -45,6 +45,13 @@ Install Python extensions (shuold not be needed) `pip install -r requirements.tx
 * ./requirements.txt - contains python modules required for proper functionality of integration
     
 # Changelog
+* v. 1.2.2 Thanks to [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy)
+   * Updated psutil to version 5.7.0
+   * Updated requests to version 2.24.0
+   * Updated galaxy.plugin.api to version 0.66
+   * Updated urllib3 to version 1.25.9
+   * Fixed exception thrown if user didn't have all dlcs installed
+   * Fixed incorrect friend ID type after fetching it from XIVAPI
 * v. 1.2.1
    * Fixed issue with GOG Galaxy integrations
 * v. 1.2.0 Thanks to [@UmbyUmbreon](https://github.com/UmbyUmbreon) and [@FriendsOfGalaxy](https://github.com/FriendsOfGalaxy)
