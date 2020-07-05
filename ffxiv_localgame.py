@@ -1,3 +1,4 @@
+import platform
 import os
 import sys
 import logging
@@ -31,6 +32,10 @@ def get_game_instances() -> List[FFXIVLocalGame]:
     ):
         return result
 
-    result.append(FFXIVLocalGame(install_folder + "\\boot\\", "ffxivboot.exe"))
+    if platform.machine().endswith('64'):
+        launcher_exe = "ffxivboot64.exe"
+    else:
+        launcher_exe = "ffxivboot.exe"
+    result.append(FFXIVLocalGame(install_folder + "\\boot\\", launcher_exe))
         
     return result
