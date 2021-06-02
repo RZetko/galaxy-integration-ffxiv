@@ -1,4 +1,4 @@
 psutil == 5.7.0
 requests == 2.24.0
 galaxy.plugin.api == 0.66
-urllib3 == 1.25.9
+urllib3 == 1.26.5
