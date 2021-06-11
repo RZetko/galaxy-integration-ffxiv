@@ -26,7 +26,7 @@ down to community integrations and click connect on Final Fantasy XIV integratio
 
 * Installing game - unsupported by platform (already implemented in code, if platform receives support for it, it should automatically work)
 
-* Playtime tracking - unsupported by XIVAPI
+* Playtime tracking - unsupported by XIVAPI; local play time tracking is limited to one galaxy instance (if you try to play on multiple PCs, only local play time from the last PC will be used)
 
 # Working with code
 
