@@ -13,25 +13,21 @@ down to community integrations and click connect on Final Fantasy XIV integratio
 # Features
 
 ## Supported
-
 * Launching and uninstalling game
-
 * Detecting if game is running
-
 * Syncing friends
 
 ## Unsupported
-
 * Achievements syncing - unsupported by platform (already implemented in code, if platform receives support for it, it should automatically work)
-
 * Installing game - unsupported by platform (already implemented in code, if platform receives support for it, it should automatically work)
-
 * Playtime tracking - unsupported by XIVAPI; local play time tracking is limited to one galaxy instance (if you try to play on multiple PCs, only local play time from the last PC will be used)
 
 # Working with code
 
 ## Before starting
-Install Python extensions (shuold not be needed) `pip install -r requirements.txt -t ./modules --implementation cp --python-version 37 --only-binary=:all:`
+Install Python extensions (should not be needed) `pip install -r requirements.txt -t ./modules --implementation cp --python-version 37 --only-binary=:all: --upgrade`
+
+If you have 64-bit version of Python set as default, you'll need to have 32-bit version installed as well sid-by-side and use `py -3.7-32 -m pip install -r requirements.txt -t ./modules --implementation cp --python-version 37 --only-binary=:all: --upgrade`
 
 ## Files and folders
 * ./html/ - folder with html files that will popup when first connecting integration

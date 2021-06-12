@@ -7,7 +7,6 @@ import sys
 import pprint
 import threading
 import tempfile
-import modules.urllib3 as urllib3
 
 from urllib.parse import parse_qs
 from typing import Dict, List
@@ -15,10 +14,10 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from enum import Enum
 
 modules =  os.path.join(os.path.dirname(os.path.realpath(__file__)),'modules\\')
-
 if modules not in sys.path:
     sys.path.insert(0, modules)
 
+import modules.urllib3 as urllib3
 import modules.requests as requests
 
 class FFXIVAuthorizationResult(Enum):
@@ -105,7 +104,7 @@ class FFXIVAPI(object):
     API_URL_CHARACTER = 'character/'
     LOCALSERVER_HOST = '127.0.0.1'
     LOCALSERVER_PORT = 13338
-    INSTALL_URL = "http://gdl.square-enix.com/ffxiv/inst/ffxivsetup.exe"
+    INSTALL_URL = "https://gdl.square-enix.com/ffxiv/inst/ffxivsetup.exe"
 
     def __init__(self):
         self._server_thread = None
