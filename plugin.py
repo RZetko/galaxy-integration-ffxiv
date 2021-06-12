@@ -267,7 +267,6 @@ class FinalFantasyXIVPlugin(Plugin):
 
     async def _is_running_internal(self, target_exes):
         running = False
-
         for process in psutil.process_iter():
             try:
                 if process.name().lower() in target_exes:
@@ -275,24 +274,26 @@ class FinalFantasyXIVPlugin(Plugin):
                     break
             except (psutil.AccessDenied, psutil.NoSuchProcess):
                 continue
-
             await asyncio.sleep(self.SLEEP_CHECK_RUNNING_ITER)
-
         return LocalGameState.Installed | LocalGameState.Running if running else LocalGameState.Installed
 
     async def _is_running(self):
         target_exes = [
-            "ffxivlauncher64.exe",
-            "ffxiv.exe",
             "ffxiv_dx11.exe",
-            "ffxivlauncher.exe"
+            "ffxivlauncher.exe",
+            "ffxiv.exe",
+            "ffxivupdater.exe",
+            "ffxivlauncher64.exe",
+            "ffxivupdater64.exe",
+            "ffxivboot.exe",
+            "ffxivboot64.exe"
         ]
         return await self._is_running_internal(target_exes)
 
     async def _is_running_no_launcher(self):
         target_exes = [
-            "ffxiv.exe",
-            "ffxiv_dx11.exe"
+            "ffxiv_dx11.exe",
+            "ffxiv.exe"
         ]
         return await self._is_running_internal(target_exes)
 
